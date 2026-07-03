@@ -1,0 +1,238 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Meus 20 Aninhos ✨</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="index.css">
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,700;1,700&family=Dancing+Script:wght@400;700&family=Fredoka:wght@400;600;700&family=Caveat:wght@400;700&display=swap" rel="stylesheet">
+
+</head>
+<body>
+<!-- FLOATING DECORATIONS -->
+<div class="floating-decorations" aria-hidden="true">
+  <span class="float-el">✦</span>
+  <span class="float-el">✧</span>
+  <span class="float-el">⋆</span>
+  <span class="float-el">✦</span>
+  <span class="float-el">✧</span>
+  <span class="float-el">⋆</span>
+  <span class="float-el">✦</span>
+  <span class="float-el">✧</span>
+</div>
+
+<!-- SIDEBAR TOGGLE (mobile) -->
+<button class="sidebar-toggle" id="sidebarToggle" aria-label="Abrir menu">
+  <span></span>
+  <span></span>
+  <span></span>
+</button>
+
+<!-- SIDEBAR OVERLAY (mobile) -->
+<div class="sidebar-overlay" id="sidebarOverlay"></div>
+
+<!-- SIDEBAR NAV -->
+<nav class="sidebar" id="sidebar">
+  <div class="sidebar-brand">
+    <span class="sidebar-brand-icon">✨</span>
+    <span class="sidebar-brand-text">meus 20</span>
+  </div>
+
+  <div class="sidebar-nav">
+    <a href="index.html" class="sidebar-item active" aria-label="Convite">
+      <span class="sidebar-icon">🎉</span>
+      <span class="sidebar-label">Convite</span>
+    </a>
+    <a href="playlist.html" class="sidebar-item" aria-label="Playlist">
+      <span class="sidebar-icon">🎧</span>
+      <span class="sidebar-label">Playlist</span>
+    </a>
+  </div>
+
+  <div class="sidebar-footer">feito com 💖</div>
+</nav>
+
+<!-- MAIN CONTENT -->
+<main class="main-content">
+  
+
+  <!-- 3D CARD -->
+  <section class="card-section">
+    <div class="card-container" id="cardContainer">
+      <div class="card-inner" id="cardInner">
+        <!-- FRONT -->
+        <div class="card-face card-front">
+          <img src="frente.png" alt="Convite - Frente" class="card-image">
+          <div class="card-overlay-front">
+            <span class="sparkle s1">✦</span>
+            <span class="sparkle s2">✧</span>
+            <span class="sparkle s3">⋆</span>
+            <span class="sparkle s4">✦</span>
+            <span class="sparkle s5">✧</span>
+          </div>
+        </div>
+        <!-- BACK -->
+        <div class="card-face card-back">
+          <img src="verso.png" alt="Convite - Verso" class="card-image">
+        </div>
+      </div>
+    </div>
+    <button class="flip-btn" id="flipBtn" aria-label="Virar convite">
+      <span class="flip-icon">↻</span> Virar Convite
+    </button>
+  </section>
+
+
+</main>
+
+<script>
+(function() {
+  const cardInner = document.getElementById('cardInner');
+  const cardContainer = document.getElementById('cardContainer');
+  const flipBtn = document.getElementById('flipBtn');
+  const sidebar = document.getElementById('sidebar');
+  const sidebarToggle = document.getElementById('sidebarToggle');
+  const sidebarOverlay = document.getElementById('sidebarOverlay');
+  let isFlipped = false;
+  let isDragging = false;
+  let startX = 0;
+  let currentRotation = 0;
+
+  // Mobile sidebar toggle
+  function openSidebar() {
+    sidebar.classList.add('expanded');
+    sidebarToggle.classList.add('open');
+    sidebarOverlay.classList.add('visible');
+  }
+
+  function closeSidebar() {
+    sidebar.classList.remove('expanded');
+    sidebarToggle.classList.remove('open');
+    sidebarOverlay.classList.remove('visible');
+  }
+
+  sidebarToggle.addEventListener('click', function() {
+    if (sidebar.classList.contains('expanded')) {
+      closeSidebar();
+    } else {
+      openSidebar();
+    }
+  });
+
+  sidebarOverlay.addEventListener('click', closeSidebar);
+
+  // Close sidebar on navigation (mobile)
+  document.querySelectorAll('.sidebar-item').forEach(function(item) {
+    item.addEventListener('click', function() {
+      if (window.innerWidth <= 768) {
+        closeSidebar();
+      }
+    });
+  });
+
+  // Close sidebar on window resize to desktop
+  window.addEventListener('resize', function() {
+    if (window.innerWidth > 768 && sidebar.classList.contains('expanded')) {
+      closeSidebar();
+    }
+  });
+
+  // Button flip
+  flipBtn.addEventListener('click', function() {
+    isFlipped = !isFlipped;
+    cardInner.classList.toggle('flipped', isFlipped);
+  });
+
+  // Drag to flip (desktop)
+  cardContainer.addEventListener('mousedown', function(e) {
+    isDragging = true;
+    startX = e.clientX;
+    cardInner.style.transition = 'none';
+    e.preventDefault();
+  });
+
+  document.addEventListener('mousemove', function(e) {
+    if (!isDragging) return;
+    const deltaX = e.clientX - startX;
+    const baseRotation = isFlipped ? 180 : 0;
+    currentRotation = baseRotation + (deltaX * 0.5);
+    cardInner.style.transform = 'rotateY(' + currentRotation + 'deg)';
+  });
+
+  document.addEventListener('mouseup', function(e) {
+    if (!isDragging) return;
+    isDragging = false;
+    cardInner.style.transition = 'transform 0.8s cubic-bezier(0.4, 0.0, 0.2, 1)';
+    const deltaX = e.clientX - startX;
+    if (Math.abs(deltaX) > 60) {
+      isFlipped = !isFlipped;
+      cardInner.classList.toggle('flipped', isFlipped);
+      cardInner.style.transform = '';
+    } else {
+      cardInner.style.transform = isFlipped ? 'rotateY(180deg)' : 'rotateY(0deg)';
+    }
+  });
+
+  // Touch to flip (mobile)
+  let touchStartX = 0;
+  cardContainer.addEventListener('touchstart', function(e) {
+    touchStartX = e.touches[0].clientX;
+    cardInner.style.transition = 'none';
+  }, { passive: true });
+
+  cardContainer.addEventListener('touchmove', function(e) {
+    const deltaX = e.touches[0].clientX - touchStartX;
+    const baseRotation = isFlipped ? 180 : 0;
+    currentRotation = baseRotation + (deltaX * 0.5);
+    cardInner.style.transform = 'rotateY(' + currentRotation + 'deg)';
+  }, { passive: true });
+
+  cardContainer.addEventListener('touchend', function(e) {
+    cardInner.style.transition = 'transform 0.8s cubic-bezier(0.4, 0.0, 0.2, 1)';
+    const endX = e.changedTouches[0].clientX;
+    const deltaX = endX - touchStartX;
+    if (Math.abs(deltaX) > 50) {
+      isFlipped = !isFlipped;
+      cardInner.classList.toggle('flipped', isFlipped);
+    }
+    cardInner.style.transform = '';
+  });
+
+  // Parallax on desktop
+  if (window.matchMedia('(min-width: 1024px)').matches) {
+    document.addEventListener('mousemove', function(e) {
+      if (isDragging) return;
+      const xPercent = (e.clientX / window.innerWidth - 0.5) * 2;
+      const yPercent = (e.clientY / window.innerHeight - 0.5) * 2;
+      const floatEls = document.querySelectorAll('.float-el');
+      floatEls.forEach(function(el, i) {
+        const speed = (i + 1) * 3;
+        el.style.transform = 'translate(' + (xPercent * speed) + 'px, ' + (yPercent * speed) + 'px)';
+      });
+    });
+  }
+
+  // Intersection Observer for fade-in sections
+  const sections = document.querySelectorAll('.invite-text');
+  sections.forEach(function(s) {
+    s.style.opacity = '0';
+    s.style.transform = 'translateY(30px)';
+    s.style.transition = 'opacity 0.8s ease, transform 0.8s ease';
+  });
+
+  const observer = new IntersectionObserver(function(entries) {
+    entries.forEach(function(entry) {
+      if (entry.isIntersecting) {
+        entry.target.style.opacity = '1';
+        entry.target.style.transform = 'translateY(0)';
+        observer.unobserve(entry.target);
+      }
+    });
+  }, { threshold: 0.2 });
+
+  sections.forEach(function(s) { observer.observe(s); });
+})();
+</script>
+</body>
+</html>

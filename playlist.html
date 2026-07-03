@@ -1,0 +1,124 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Playlist ✨</title>
+<link rel="stylesheet" href="playlist.css">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,700;1,700&family=Fredoka:wght@400;600;700&family=Caveat:wght@400;700&display=swap" rel="stylesheet">
+
+</head>
+<body>
+<!-- FLOATING DECORATIONS -->
+<div class="floating-decorations" aria-hidden="true">
+  <span class="float-el">✦</span>
+  <span class="float-el">✧</span>
+  <span class="float-el">⋆</span>
+  <span class="float-el">✦</span>
+  <span class="float-el">✧</span>
+  <span class="float-el">⋆</span>
+  <span class="float-el">✦</span>
+  <span class="float-el">✧</span>
+</div>
+
+<!-- SIDEBAR TOGGLE (mobile) -->
+<button class="sidebar-toggle" id="sidebarToggle" aria-label="Abrir menu">
+  <span></span>
+  <span></span>
+  <span></span>
+</button>
+
+<!-- SIDEBAR OVERLAY (mobile) -->
+<div class="sidebar-overlay" id="sidebarOverlay"></div>
+
+<!-- SIDEBAR NAV -->
+<nav class="sidebar" id="sidebar">
+  <div class="sidebar-brand">
+    <span class="sidebar-brand-icon">✨</span>
+    <span class="sidebar-brand-text">meus 20</span>
+  </div>
+
+  <div class="sidebar-nav">
+    <a href="index.html" class="sidebar-item" aria-label="Convite">
+      <span class="sidebar-icon">🎉</span>
+      <span class="sidebar-label">Convite</span>
+    </a>
+    <a href="playlist.html" class="sidebar-item active" aria-label="Playlist">
+      <span class="sidebar-icon">🎧</span>
+      <span class="sidebar-label">Playlist</span>
+    </a>
+  </div>
+
+</nav>
+
+<!-- MAIN CONTENT -->
+<main class="main-content">
+
+  <a href="https://open.spotify.com/playlist/7yX7bNXy6D9hhgejGA0sjK?si=YcwyXJRkQNqDfkDvTPvcZg&pt=405a7f811d1da3ad5e8a23d76dc59f04&pi=9LijCpbHTlWmB" target="_blank" rel="noopener" class="playlist-card" id="playlistLink">
+    <img src="playlist.png" alt="Playlist - clique para abrir">
+  </a>
+
+</main>
+
+<script>
+(function() {
+  const sidebar = document.getElementById('sidebar');
+  const sidebarToggle = document.getElementById('sidebarToggle');
+  const sidebarOverlay = document.getElementById('sidebarOverlay');
+
+  // Mobile sidebar toggle
+  function openSidebar() {
+    sidebar.classList.add('expanded');
+    sidebarToggle.classList.add('open');
+    sidebarOverlay.classList.add('visible');
+  }
+
+  function closeSidebar() {
+    sidebar.classList.remove('expanded');
+    sidebarToggle.classList.remove('open');
+    sidebarOverlay.classList.remove('visible');
+  }
+
+  sidebarToggle.addEventListener('click', function() {
+    if (sidebar.classList.contains('expanded')) {
+      closeSidebar();
+    } else {
+      openSidebar();
+    }
+  });
+
+  sidebarOverlay.addEventListener('click', closeSidebar);
+
+  // Close sidebar on navigation (mobile)
+  document.querySelectorAll('.sidebar-item').forEach(function(item) {
+    item.addEventListener('click', function() {
+      if (window.innerWidth <= 768) {
+        closeSidebar();
+      }
+    });
+  });
+
+  // Close sidebar on window resize to desktop
+  window.addEventListener('resize', function() {
+    if (window.innerWidth > 768 && sidebar.classList.contains('expanded')) {
+      closeSidebar();
+    }
+  });
+
+  // Parallax on desktop
+  if (window.matchMedia('(min-width: 1024px)').matches) {
+    document.addEventListener('mousemove', function(e) {
+      var xPercent = (e.clientX / window.innerWidth - 0.5) * 2;
+      var yPercent = (e.clientY / window.innerHeight - 0.5) * 2;
+      var floatEls = document.querySelectorAll('.float-el');
+      floatEls.forEach(function(el, i) {
+        var speed = (i + 1) * 3;
+        el.style.transform = 'translate(' + (xPercent * speed) + 'px, ' + (yPercent * speed) + 'px)';
+      });
+    });
+  }
+})();
+</script>
+</body>
+</html>
