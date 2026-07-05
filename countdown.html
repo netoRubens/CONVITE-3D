@@ -1,0 +1,210 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Contagem Regressiva ✨</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="countdown.css">
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,700;1,700&family=Fredoka:wght@400;600;700&family=Caveat:wght@400;700&display=swap" rel="stylesheet">
+
+</head>
+<body>
+
+<!-- SIDEBAR TOGGLE (mobile) -->
+<button class="sidebar-toggle" id="sidebarToggle" aria-label="Abrir menu">
+  <span></span>
+  <span></span>
+  <span></span>
+</button>
+
+<!-- SIDEBAR OVERLAY (mobile) -->
+<div class="sidebar-overlay" id="sidebarOverlay"></div>
+
+<!-- SIDEBAR NAV -->
+<nav class="sidebar" id="sidebar">
+  <div class="sidebar-brand">
+    <span class="sidebar-brand-icon">✨</span>
+    <span class="sidebar-brand-text">meus 20</span>
+  </div>
+
+  <div class="sidebar-nav">
+    <a href="index.html" class="sidebar-item" aria-label="Convite">
+      <span class="sidebar-icon">🎉</span>
+      <span class="sidebar-label">Convite</span>
+    </a>
+    <a href="playlist.html" class="sidebar-item" aria-label="Playlist">
+      <span class="sidebar-icon">🎧</span>
+      <span class="sidebar-label">Playlist</span>
+    </a>
+    <a href="countdown.html" class="sidebar-item active" aria-label="Contagem">
+      <span class="sidebar-icon">⏳</span>
+      <span class="sidebar-label">Contagem</span>
+    </a>
+  </div>
+
+  <div class="sidebar-footer">feito com 💖</div>
+</nav>
+
+<div class="glow"></div>
+<div class="particles" id="particles"></div>
+
+<div class="main-content">
+  <div class="container">
+    <div class="message">Algo especial está chegando...</div>
+    
+    <div class="countdown" id="countdown">
+      <div class="time-block">
+        <div class="time-value" id="days">00</div>
+        <div class="time-label">Dias</div>
+      </div>
+      <div class="separator">:</div>
+      <div class="time-block">
+        <div class="time-value" id="hours">00</div>
+        <div class="time-label">Horas</div>
+      </div>
+      <div class="separator">:</div>
+      <div class="time-block">
+        <div class="time-value" id="minutes">00</div>
+        <div class="time-label">Minutos</div>
+      </div>
+      <div class="separator">:</div>
+      <div class="time-block">
+        <div class="time-value" id="seconds">00</div>
+        <div class="time-label">Segundos</div>
+      </div>
+    </div>
+    
+    <img src="countdown-final.png" alt="Revelação" class="final-image" id="finalImage">
+  </div>
+  
+  <!-- Áudio de fundo invisível -->
+  <audio id="backgroundAudio" loop preload="auto">
+    <source src="musica-final.mp3" type="audio/mpeg">
+  </audio>
+</div>
+
+<script>
+// ============================================
+// CONFIGURAÇÃO - ALTERE A URL DA IMAGEM AQUI
+// ============================================
+const IMAGEM_FINAL = "countdown-final.png";
+// ============================================
+
+// Data alvo: 12 de dezembro de 2026 às 00:00 (horário de Brasília, UTC-3) - TESTE
+const TARGET_DATE = new Date('2026-12-12T00:00:00-03:00').getTime();
+
+// Elementos DOM
+const countdownEl = document.getElementById('countdown');
+const messageEl = document.querySelector('.message');
+const finalImageEl = document.getElementById('finalImage');
+const daysEl = document.getElementById('days');
+const hoursEl = document.getElementById('hours');
+const minutesEl = document.getElementById('minutes');
+const secondsEl = document.getElementById('seconds');
+
+// Sidebar mobile
+const sidebar = document.getElementById('sidebar');
+const sidebarToggle = document.getElementById('sidebarToggle');
+const sidebarOverlay = document.getElementById('sidebarOverlay');
+
+function openSidebar() {
+  sidebar.classList.add('expanded');
+  sidebarToggle.classList.add('open');
+  sidebarOverlay.classList.add('visible');
+}
+
+function closeSidebar() {
+  sidebar.classList.remove('expanded');
+  sidebarToggle.classList.remove('open');
+  sidebarOverlay.classList.remove('visible');
+}
+
+sidebarToggle.addEventListener('click', function() {
+  if (sidebar.classList.contains('expanded')) {
+    closeSidebar();
+  } else {
+    openSidebar();
+  }
+});
+
+sidebarOverlay.addEventListener('click', closeSidebar);
+
+document.querySelectorAll('.sidebar-item').forEach(function(item) {
+  item.addEventListener('click', function() {
+    if (window.innerWidth <= 768) {
+      closeSidebar();
+    }
+  });
+});
+
+window.addEventListener('resize', function() {
+  if (window.innerWidth > 768 && sidebar.classList.contains('expanded')) {
+    closeSidebar();
+  }
+});
+
+// Criar partículas
+function createParticles() {
+  const particlesContainer = document.getElementById('particles');
+  const particleCount = 50;
+  
+  for (let i = 0; i < particleCount; i++) {
+    const particle = document.createElement('div');
+    particle.className = 'particle';
+    particle.style.left = Math.random() * 100 + '%';
+    particle.style.animationDelay = Math.random() * 15 + 's';
+    particle.style.animationDuration = (Math.random() * 10 + 10) + 's';
+    particlesContainer.appendChild(particle);
+  }
+}
+
+// Atualizar contagem regressiva
+function updateCountdown() {
+  const now = new Date().getTime();
+  const distance = TARGET_DATE - now;
+  
+  if (distance <= 0) {
+    // Contagem chegou a zero
+    showFinalImage();
+    return;
+  }
+  
+  // Calcular dias, horas, minutos e segundos
+  const days = Math.floor(distance / (1000 * 60 * 60 * 24));
+  const hours = Math.floor((distance % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+  const minutes = Math.floor((distance % (1000 * 60 * 60)) / (1000 * 60));
+  const seconds = Math.floor((distance % (1000 * 60)) / 1000);
+  
+  // Atualizar display
+  daysEl.textContent = String(days).padStart(2, '0');
+  hoursEl.textContent = String(hours).padStart(2, '0');
+  minutesEl.textContent = String(minutes).padStart(2, '0');
+  secondsEl.textContent = String(seconds).padStart(2, '0');
+}
+
+// Mostrar imagem final e tocar música de fundo
+function showFinalImage() {
+  countdownEl.style.display = 'none';
+  messageEl.style.display = 'none';
+  finalImageEl.src = IMAGEM_FINAL;
+  finalImageEl.style.display = 'block';
+  
+  // Tocar música de fundo com loop
+  const audio = document.getElementById('backgroundAudio');
+  audio.volume = 0.7;
+  audio.play().catch(function(error) {
+    console.log('Autoplay bloqueado, clique na página para tocar a música');
+  });
+}
+
+// Inicializar
+createParticles();
+updateCountdown();
+
+// Atualizar a cada segundo
+setInterval(updateCountdown, 1000);
+</script>
+
+</body>
+</html>
